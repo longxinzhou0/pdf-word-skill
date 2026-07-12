@@ -1,4 +1,4 @@
 interface:
   display_name: "PDF Word Skill"
-  short_description: "Rebuild editable Word pages from PDFs."
-  default_prompt: "Use $pdf-word-skill to rebuild a PDF into editable Word, compare each page, and adjust text and image positions."
+  short_description: "Rebuild editable Word pages from PDFs with text verification."
+  default_prompt: "Use $pdf-word-skill to rebuild a PDF into editable Word, verify the written text against the PDF text layer or OCR source, compare each page, and adjust text and image positions."
