@@ -7,7 +7,7 @@ description: Build editable Word documents from PDFs by splitting the PDF into p
 
 This skill is for rebuilding an editable Word document from a PDF while keeping the layout as close to the original PDF as possible. Direct conversion is not trusted as the final result. The core loop is:
 
-**recognize content -> rebuild Word page -> render Word -> compare with PDF -> adjust text/images -> repeat.**
+**recognize content -> rebuild Word page -> compare written text -> render Word -> compare with PDF -> adjust text/images -> repeat.**
 
 ## Operating Principle
 
@@ -32,17 +32,18 @@ This skill is for rebuilding an editable Word document from a PDF while keeping 
    - Recover photos/diagrams/background artwork from the source PDF render.
    - Place recognized text as editable Word text boxes.
    - Keep text boxes, images, and page geometry close to the PDF coordinates.
-5. Render the rebuilt Word page back to PDF/PNG using LibreOffice.
-6. Validate recognized text:
+5. Validate written text before trusting layout:
    - Compare the text written into Word against the PDF text layer or OCR source text.
-   - Check for missing lines, garbled characters, duplicated text, and obvious OCR substitutions.
+   - Check for missing lines, garbled characters, duplicated text, wrong punctuation, and obvious OCR substitutions.
    - Record a text similarity score in the page report.
+6. Render the rebuilt Word page back to PDF/PNG using LibreOffice.
 7. Compare the rendered Word page against the source PDF page.
 8. Adjust and rerender:
    - Move or resize text boxes.
    - Move, crop, or scale images.
    - Adjust font size, box width/height, and line spacing.
    - Fix missing photos or OCR text.
+   - Re-run text comparison whenever rewritten content changes.
 9. Repeat comparison until the page is acceptable or mark it for manual review.
 10. Save the approved single-page DOCX and proceed to the next page.
 11. Merge approved pages into the final editable DOCX.
@@ -92,6 +93,7 @@ python "$env:CODEX_HOME\skills\pdf2docx-compare-repair\scripts\repair_pdf_to_wor
 
 - Text that is reconstructed from PDF text/OCR must be editable in Word/WPS.
 - Reconstructed Word text must be validated against the PDF text layer or OCR source text.
+- The final written text must match the source text closely enough to avoid omissions, substitutions, duplicated lines, and OCR mistakes.
 - Photos, diagrams, and logos must be visually present and close to the original position.
 - Page size, margins, major headings, tables, and image blocks should align with the PDF.
 - If image-embedded text remains raster-only, note it in the report unless OCR reconstruction was requested for those regions.
